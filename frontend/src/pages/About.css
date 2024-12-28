@@ -1,0 +1,309 @@
+:root {
+  --primary-color: #FF9F1C;
+  --text-color: #333333;
+  --background-color: #FFFFFF;
+}
+
+.about-container {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-color);
+}
+
+/* Hero Section */
+.hero-section {
+  background-image: url('../assets/pasta.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  padding: 0 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.accent-text {
+  color: var(--primary-color);
+}
+
+/* Belief Section */
+.belief-section {
+  padding: 4rem 2rem;
+}
+
+.belief-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.belief-text {
+  margin-bottom: 3rem;
+}
+
+.belief-text h2 {
+  font-size: 2.5rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.belief-text p {
+  color: #666;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.feature-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  color: white;
+}
+
+.card-overlay h3 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.feature-list {
+  background: #f8f8f8;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.feature-item:hover {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.feature-text h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.feature-text p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.testimonial-card {
+  background: var(--primary-color);
+  color: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.testimonial-content h3 {
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.author-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 1rem;
+  border: 2px solid white;
+}
+
+/* Stats Section */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  padding: 4rem 2rem;
+  background: #f8f8f8;
+  margin: 4rem 0;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-item h3 {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  margin: 0;
+  font-weight: bold;
+}
+
+.stat-item p {
+  color: #666;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Values Section */
+.values-section {
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.values-section h2 {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.value-card {
+  padding: 2rem;
+  background: #f8f8f8;
+  border-radius: 20px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+}
+
+.value-card h3 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.value-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .features-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .stats-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+  
+  .belief-text h2 {
+    font-size: 2rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero-section {
+    padding: 0 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .stat-item h3 {
+    font-size: 2rem;
+  }
+  
+  .hero-section {
+    height: 200px;
+  }
+  
+  .belief-text h2 {
+    font-size: 1.5rem;
+  }
+}
+

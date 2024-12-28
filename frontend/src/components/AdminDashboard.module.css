@@ -1,0 +1,19 @@
+.adminDashboard {
+  padding: 20px;
+}
+
+.users, .recipes {
+  margin-bottom: 30px;
+}
+
+.users ul, .recipes ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.users li, .recipes li {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}

@@ -1,0 +1,46 @@
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: 60px; /* Height of the header */
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+  margin-left: 0;
+  transition: margin-left 0.3s ease;
+}
+
+/* When sidebar is closed */
+.app:not(.sidebar-open) main {
+  margin-left: 0;
+}
+
+/* When admin is logged in */
+.app.admin main {
+  margin-left: 250px; /* Width of the AdminSidebar */
+}
+
+/* When regular user is logged in and sidebar is open */
+.app.sidebar-open main {
+  margin-left: 250px;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 10px;
+  }
+  .app.sidebar-open main {
+    margin-left: 0;
+  }
+}
+

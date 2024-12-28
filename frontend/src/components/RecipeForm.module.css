@@ -1,0 +1,44 @@
+.recipeForm {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.recipeForm h2 {
+  margin-bottom: 20px;
+}
+
+.recipeForm div {
+  margin-bottom: 15px;
+}
+
+.recipeForm label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.recipeForm input[type="text"],
+.recipeForm textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.recipeForm textarea {
+  height: 100px;
+}
+
+.recipeForm button {
+  background-color: #0066cc;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.recipeForm button:hover {
+  background-color: #0052a3;
+}
+
