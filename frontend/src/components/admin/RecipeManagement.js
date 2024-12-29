@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styles from './AdminComponents.module.css';
 
 const RecipeManagement = () => {
@@ -24,23 +25,36 @@ const RecipeManagement = () => {
 
   const fetchRecipes = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/recipes`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch recipes');
+      setLoading(true);
+      const token = localStorage.getItem('token');
+    
+      if (!token) {
+        setError('Authentication token not found. Please log in again.');
+        setLoading(false);
+        return;
       }
 
-      const data = await response.json();
-      setRecipes(data);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/admin/recipes`, 
+        {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+    
+      setRecipes(response.data);
       setError(null);
     } catch (error) {
       console.error('Error fetching recipes:', error);
-      setError('Failed to load recipes. Please try again later.');
+      const errorMessage = error.response?.data?.message || 'Failed to load recipes. Please try again later.';
+      setError(errorMessage);
+    
+      // Handle unauthorized or forbidden access
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        setError('Access denied. Please ensure you have admin privileges and are logged in.');
+      }
     } finally {
       setLoading(false);
     }
@@ -48,22 +62,40 @@ const RecipeManagement = () => {
 
   const handleRecipeAction = async (recipeId, action) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/recipes/${recipeId}/${action}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${action} recipe`);
+      const token = localStorage.getItem('token');
+    
+      if (!token) {
+        alert('Authentication token not found. Please log in again.');
+        return;
       }
 
-      await fetchRecipes(); // Refresh recipe list
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+
+      if (action === 'delete') {
+        await axios.delete(
+          `${process.env.REACT_APP_API_URL}/api/admin/recipes/${recipeId}`,
+          { headers }
+        );
+      } else {
+        await axios.put(
+          `${process.env.REACT_APP_API_URL}/api/admin/recipes/${recipeId}/${action}`,
+          {},
+          { headers }
+        );
+      }
+    
+      fetchRecipes();
     } catch (error) {
       console.error(`Error ${action} recipe:`, error);
-      alert(`Failed to ${action} recipe. Please try again.`);
+      const errorMessage = error.response?.data?.message || `Failed to ${action} recipe. Please try again.`;
+      alert(errorMessage);
+    
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        alert('Access denied. Please ensure you have admin privileges and are logged in.');
+      }
     }
   };
 
@@ -80,11 +112,8 @@ const RecipeManagement = () => {
   if (error) {
     return (
       <div className={styles.error}>
-        {error}
-        <button 
-          onClick={fetchRecipes} 
-          className={styles.retryButton}
-        >
+        <span>{error}</span>
+        <button onClick={fetchRecipes} className={styles.retryButton}>
           Retry
         </button>
       </div>
@@ -131,21 +160,25 @@ const RecipeManagement = () => {
                 <td>{recipe.title}</td>
                 <td>{recipe.category}</td>
                 <td>{recipe.creatorName}</td>
-                <td>{recipe.status || 'Published'}</td>
+                <td>{recipe.status || 'Pending'}</td>
                 <td>
                   <div className={styles.actionButtons}>
-                    <button 
-                      onClick={() => handleRecipeAction(recipe._id, 'approve')}
-                      className={`${styles.button} ${styles.approveButton}`}
-                    >
-                      Approve
-                    </button>
-                    <button 
-                      onClick={() => handleRecipeAction(recipe._id, 'reject')}
-                      className={`${styles.button} ${styles.rejectButton}`}
-                    >
-                      Reject
-                    </button>
+                    {recipe.status !== 'approved' && (
+                      <button 
+                        onClick={() => handleRecipeAction(recipe._id, 'approve')}
+                        className={`${styles.button} ${styles.approveButton}`}
+                      >
+                        Approve
+                      </button>
+                    )}
+                    {recipe.status !== 'rejected' && (
+                      <button 
+                        onClick={() => handleRecipeAction(recipe._id, 'reject')}
+                        className={`${styles.button} ${styles.rejectButton}`}
+                      >
+                        Reject
+                      </button>
+                    )}
                     <button 
                       onClick={() => handleRecipeAction(recipe._id, 'delete')}
                       className={`${styles.button} ${styles.deleteButton}`}

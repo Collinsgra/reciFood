@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styles from './AdminComponents.module.css';
 
 const UserManagement = () => {
@@ -13,19 +14,11 @@ const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/users`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
+      setLoading(true);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/admin/users`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch users');
-      }
-
-      const data = await response.json();
-      setUsers(data);
+      setUsers(response.data);
       setError(null);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -37,20 +30,11 @@ const UserManagement = () => {
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}/role`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ role: newRole })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update user role');
-      }
-
-      await fetchUsers(); // Refresh user list
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}/role`, 
+        { role: newRole },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+      fetchUsers();
     } catch (error) {
       console.error('Error updating user role:', error);
       alert('Failed to update user role. Please try again.');
@@ -59,19 +43,16 @@ const UserManagement = () => {
 
   const handleUserAction = async (userId, action) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}/${action}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${action} user`);
+      if (action === 'delete') {
+        await axios.delete(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+      } else if (action === 'suspend') {
+        await axios.put(`${process.env.REACT_APP_API_URL}/api/admin/users/${userId}/suspend`, {}, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
       }
-
-      await fetchUsers(); // Refresh user list
+      fetchUsers();
     } catch (error) {
       console.error(`Error ${action} user:`, error);
       alert(`Failed to ${action} user. Please try again.`);
@@ -90,11 +71,8 @@ const UserManagement = () => {
   if (error) {
     return (
       <div className={styles.error}>
-        {error}
-        <button 
-          onClick={fetchUsers} 
-          className={styles.retryButton}
-        >
+        <span>{error}</span>
+        <button onClick={fetchUsers} className={styles.retryButton}>
           Retry
         </button>
       </div>
@@ -119,6 +97,7 @@ const UserManagement = () => {
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -139,13 +118,15 @@ const UserManagement = () => {
                     <option value="admin">Admin</option>
                   </select>
                 </td>
+                <td>{user.isActive ? 'Active' : 'Suspended'}</td>
                 <td>
                   <div className={styles.actionButtons}>
                     <button 
                       onClick={() => handleUserAction(user._id, 'suspend')}
                       className={`${styles.button} ${styles.suspendButton}`}
+                      disabled={!user.isActive}
                     >
-                      Suspend
+                      {user.isActive ? 'Suspend' : 'Suspended'}
                     </button>
                     <button 
                       onClick={() => handleUserAction(user._id, 'delete')}
