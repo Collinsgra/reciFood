@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const recipeRoutes = require('./routes/recipes');
 const userRoutes = require('./routes/users');
 const contactRoutes = require('./routes/contact');
+const adminRoutes = require('./routes/admin'); // Added admin routes import
 const checkTokenExpiration = require('./middleware/checkTokenExpiration'); // Added middleware import
 
 dotenv.config();
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/admin', adminRoutes); // Added admin routes middleware
 
 // Error handling middleware
 app.use((err, req, res, next) => {

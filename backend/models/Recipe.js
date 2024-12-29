@@ -46,7 +46,12 @@ const recipeSchema = new mongoose.Schema({
   creatorName: {
     type: String,
     required: true
-  }
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
+  },
 }, {
   timestamps: true
 });

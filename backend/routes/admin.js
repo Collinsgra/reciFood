@@ -20,22 +20,14 @@ router.use(adminLimiter);
 router.get('/dashboard-stats', adminController.getDashboardStats);
 router.get('/recent-activity', adminController.getRecentActivity);
 router.get('/users', adminController.getUsers);
-router.put('/users/:id/role',
-  [
-    param('id').isMongoId(),
-    body('role').isIn(['user', 'admin', 'moderator'])
-  ],
-  adminController.updateUserRole
-);
+router.put('/users/:id/role', adminController.updateUserRole);
+router.put('/users/:id/suspend', adminController.suspendUser);
+router.delete('/users/:id', adminController.deleteUser);
 
 router.get('/recipes', adminController.getRecipes);
-router.put('/recipes/:id/status',
-  [
-    param('id').isMongoId(),
-    body('status').isIn(['draft', 'published', 'archived'])
-  ],
-  adminController.updateRecipeStatus
-);
+router.put('/recipes/:id/approve', adminController.approveRecipe);
+router.put('/recipes/:id/reject', adminController.rejectRecipe);
+router.delete('/recipes/:id', adminController.deleteRecipe);
 
 router.get('/featured-recipes', adminController.getFeaturedRecipes);
 router.get('/blog-posts', adminController.getBlogPosts);

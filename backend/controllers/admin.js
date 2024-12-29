@@ -41,32 +41,52 @@ exports.getUsers = async (req, res) => {
     const users = await User.find().select('-password');
     res.json(users);
   } catch (error) {
-    console.error('Error in getUsers:', error);
-    res.status(500).json({ message: 'Error fetching users' });
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Error fetching users', error: error.message });
   }
 };
 
 exports.updateUserRole = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
   try {
     const user = await User.findByIdAndUpdate(
       req.params.id,
       { role: req.body.role },
-      { new: true, runValidators: true }
+      { new: true }
     ).select('-password');
-
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.json(user);
   } catch (error) {
-    console.error('Error in updateUserRole:', error);
-    res.status(500).json({ message: 'Error updating user role' });
+    res.status(500).json({ message: 'Error updating user role', error: error.message });
+  }
+};
+
+exports.suspendUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isActive: false },
+      { new: true }
+    ).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Error suspending user', error: error.message });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting user', error: error.message });
   }
 };
 
@@ -75,8 +95,8 @@ exports.getRecipes = async (req, res) => {
     const recipes = await Recipe.find().populate('createdBy', 'name');
     res.json(recipes);
   } catch (error) {
-    console.error('Error in getRecipes:', error);
-    res.status(500).json({ message: 'Error fetching recipes' });
+    console.error('Error fetching recipes:', error);
+    res.status(500).json({ message: 'Error fetching recipes', error: error.message });
   }
 };
 
@@ -101,6 +121,50 @@ exports.updateRecipeStatus = async (req, res) => {
   } catch (error) {
     console.error('Error in updateRecipeStatus:', error);
     res.status(500).json({ message: 'Error updating recipe status' });
+  }
+};
+
+exports.approveRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      { status: 'approved' },
+      { new: true }
+    );
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found' });
+    }
+    res.json(recipe);
+  } catch (error) {
+    res.status(500).json({ message: 'Error approving recipe', error: error.message });
+  }
+};
+
+exports.rejectRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(
+      req.params.id,
+      { status: 'rejected' },
+      { new: true }
+    );
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found' });
+    }
+    res.json(recipe);
+  } catch (error) {
+    res.status(500).json({ message: 'Error rejecting recipe', error: error.message });
+  }
+};
+
+exports.deleteRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findByIdAndDelete(req.params.id);
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found' });
+    }
+    res.json({ message: 'Recipe deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting recipe', error: error.message });
   }
 };
 
