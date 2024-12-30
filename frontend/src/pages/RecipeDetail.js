@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Clock, Users, ChefHat, Timer, BarChart, Share2, Edit, Trash2 } from 'lucide-react';
+import { Clock, Users, ChefHat, Timer, BarChart, Edit, Trash2 } from 'lucide-react';
 import styles from './RecipeDetail.module.css';
 import Modal from '../components/Modal';
 import ShareMenu from '../components/ShareMenu';
+import AuthorRecipes from '../components/AuthorRecipes';
 
 const RecipeDetail = () => {
   const [recipe, setRecipe] = useState(null);
@@ -12,41 +13,63 @@ const RecipeDetail = () => {
   const [error, setError] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [authorRecipes, setAuthorRecipes] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchRecipe();
-  }, [id]);
-
-  const fetchRecipe = async () => {
+  const fetchRecipe = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = localStorage.getItem('token');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/recipes/${id}`,
+
+      // First fetch the recipe
+      const recipeResponse = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/recipes/${id}`, 
         { headers }
       );
-      
-      setRecipe(response.data);
+
+      const recipe = recipeResponse.data;
+      setRecipe(recipe);
+
+      // Fetch author's recipes
+      if (recipe && recipe.createdBy) {
+        try {
+          const authorRecipesResponse = await axios.get(
+            `${process.env.REACT_APP_API_URL}/api/recipes/creator/${recipe.createdBy}`, 
+            { headers }
+          );
+          setAuthorRecipes(authorRecipesResponse.data.recipes || []);
+        } catch (authorError) {
+          console.error('Error fetching author recipes:', authorError);
+          setAuthorRecipes([]);
+        }
+      } else {
+        setAuthorRecipes([]);
+      }
+
       // Check if the logged-in user is the owner
       const userId = localStorage.getItem('userId');
-      setIsOwner(userId && response.data.createdBy === userId);
-      
+      setIsOwner(userId && recipe.createdBy === userId);
+
     } catch (error) {
       console.error('Error fetching recipe:', error);
       setError(
         error.response?.data?.message || 
         'Failed to load recipe. Please try again later.'
       );
+      setRecipe(null);
+      setAuthorRecipes([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchRecipe();
+  }, [id, fetchRecipe]);
 
   const handleDeleteClick = () => {
     setDeleteModalOpen(true);
@@ -189,7 +212,9 @@ const RecipeDetail = () => {
             </div>
           </div>
         </div>
-
+        {recipe && recipe.createdBy && authorRecipes.length > 0 && (
+          <AuthorRecipes recipes={authorRecipes} currentRecipeId={recipe._id} />
+        )}
         <div className={styles.chefCard}>
           <div className={styles.chefInfo}>
             <h3>Recipe by</h3>
