@@ -1,0 +1,194 @@
+.userBlogManagement {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .header h1 {
+    margin: 0;
+  }
+  
+  .createButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+  }
+  
+  .createButton:hover {
+    background-color: #333;
+  }
+  
+  .emptyState {
+    text-align: center;
+    padding: 3rem;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    color: #666;
+  }
+  
+  .blogGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .blogCard {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .blogCard:hover {
+    transform: translateY(-5px);
+  }
+  
+  .blogImage {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+  }
+  
+  .blogImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .blogContent {
+    padding: 1.5rem;
+  }
+  
+  .blogContent h2 {
+    margin: 0 0 1rem;
+    font-size: 1.25rem;
+  }
+  
+  .blogContent p {
+    margin: 0 0 1rem;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  .blogActions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .editButton,
+  .deleteButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+  }
+  
+  .editButton {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  .editButton:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .deleteButton {
+    background-color: #ff4d4f;
+    color: #fff;
+  }
+  
+  .deleteButton:hover {
+    background-color: #ff7875;
+  }
+  
+  .modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .cancelButton:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .loading,
+  .error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+  }
+  
+  .error {
+    color: #dc3545;
+  }
+  
+  @media (max-width: 768px) {
+    .userBlogManagement {
+      padding: 1rem;
+    }
+  
+    .header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  
+    .createButton {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .blogGrid {
+      grid-template-columns: 1fr;
+    }
+  
+    .blogActions {
+      flex-direction: column;
+    }
+  
+    .editButton,
+    .deleteButton {
+      width: 100%;
+      justify-content: center;
+    }
+  
+    .modalActions {
+      flex-direction: column;
+    }
+  
+    .modalActions button {
+      width: 100%;
+    }
+  }
+  

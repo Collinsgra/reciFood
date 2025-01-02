@@ -2,6 +2,8 @@ const User = require('../models/User');
 const Recipe = require('../models/Recipe');
 const Comment = require('../models/Comment');
 const AppSettings = require('../models/AppSettings');
+const BlogPost = require('../models/BlogPost');
+const Blog = require('../models/Blog'); // Import the Blog model
 const { validationResult } = require('express-validator');
 
 exports.getDashboardStats = async (req, res) => {
@@ -178,15 +180,110 @@ exports.getFeaturedRecipes = async (req, res) => {
   }
 };
 
+exports.featureRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(req.params.id, { featured: true }, { new: true });
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found' });
+    }
+    res.json(recipe);
+  } catch (error) {
+    console.error('Error in featureRecipe:', error);
+    res.status(500).json({ message: 'Error featuring recipe' });
+  }
+};
+
+exports.unfeatureRecipe = async (req, res) => {
+  try {
+    const recipe = await Recipe.findByIdAndUpdate(req.params.id, { featured: false }, { new: true });
+    if (!recipe) {
+      return res.status(404).json({ message: 'Recipe not found' });
+    }
+    res.json(recipe);
+  } catch (error) {
+    console.error('Error in unfeatureRecipe:', error);
+    res.status(500).json({ message: 'Error unfeaturing recipe' });
+  }
+};
+
 exports.getBlogPosts = async (req, res) => {
   try {
-    // Assuming you have a BlogPost model
-    const BlogPost = require('../models/BlogPost');
-    const blogPosts = await BlogPost.find().sort('-createdAt').populate('author', 'name');
+    const blogPosts = await BlogPost.find().populate('author', 'name').sort('-publishDate');
     res.json(blogPosts);
   } catch (error) {
     console.error('Error in getBlogPosts:', error);
     res.status(500).json({ message: 'Error fetching blog posts' });
+  }
+};
+
+exports.createBlogPost = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { title, content, tags } = req.body;
+    const blogPost = new BlogPost({
+      title,
+      content,
+      tags,
+      author: req.user._id
+    });
+    await blogPost.save();
+    res.status(201).json(blogPost);
+  } catch (error) {
+    console.error('Error in createBlogPost:', error);
+    res.status(500).json({ message: 'Error creating blog post' });
+  }
+};
+
+exports.getBlogPost = async (req, res) => {
+  try {
+    const blogPost = await BlogPost.findById(req.params.id).populate('author', 'name');
+    if (!blogPost) {
+      return res.status(404).json({ message: 'Blog post not found' });
+    }
+    res.json(blogPost);
+  } catch (error) {
+    console.error('Error in getBlogPost:', error);
+    res.status(500).json({ message: 'Error fetching blog post' });
+  }
+};
+
+exports.updateBlogPost = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { title, content, tags } = req.body;
+    const blogPost = await BlogPost.findByIdAndUpdate(req.params.id, {
+      title,
+      content,
+      tags
+    }, { new: true });
+    if (!blogPost) {
+      return res.status(404).json({ message: 'Blog post not found' });
+    }
+    res.json(blogPost);
+  } catch (error) {
+    console.error('Error in updateBlogPost:', error);
+    res.status(500).json({ message: 'Error updating blog post' });
+  }
+};
+
+exports.deleteBlogPost = async (req, res) => {
+  try {
+    const blogPost = await BlogPost.findByIdAndDelete(req.params.id);
+    if (!blogPost) {
+      return res.status(404).json({ message: 'Blog post not found' });
+    }
+    res.json({ message: 'Blog post deleted successfully' });
+  } catch (error) {
+    console.error('Error in deleteBlogPost:', error);
+    res.status(500).json({ message: 'Error deleting blog post' });
   }
 };
 
@@ -362,5 +459,94 @@ exports.changeAdminPassword = async (req, res) => {
   } catch (error) {
     console.error('Error in changeAdminPassword:', error);
     res.status(500).json({ message: 'Error changing password' });
+  }
+};
+
+// Added Blog Controller functions
+exports.getBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find()
+      .populate('author', 'name')
+      .sort('-createdAt');
+    res.json(blogs);
+  } catch (error) {
+    console.error('Error fetching blogs:', error);
+    res.status(500).json({ message: 'Error fetching blogs' });
+  }
+};
+
+exports.getBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id)
+      .populate('author', 'name');
+    
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+    
+    res.json(blog);
+  } catch (error) {
+    console.error('Error fetching blog:', error);
+    res.status(500).json({ message: 'Error fetching blog' });
+  }
+};
+
+exports.createBlog = async (req, res) => {
+  try {
+    const { title, content, tags } = req.body;
+    
+    const blog = new Blog({
+      title,
+      content,
+      tags: tags ? JSON.parse(tags) : [],
+      author: req.user._id,
+      picture: req.file ? `/uploads/${req.file.filename}` : null
+    });
+
+    await blog.save();
+    res.status(201).json(blog);
+  } catch (error) {
+    console.error('Error creating blog:', error);
+    res.status(500).json({ message: 'Error creating blog' });
+  }
+};
+
+exports.updateBlog = async (req, res) => {
+  try {
+    const { title, content, tags } = req.body;
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
+    blog.title = title || blog.title;
+    blog.content = content || blog.content;
+    blog.tags = tags ? JSON.parse(tags) : blog.tags;
+    
+    if (req.file) {
+      blog.picture = `/uploads/${req.file.filename}`;
+    }
+
+    const updatedBlog = await blog.save();
+    res.json(updatedBlog);
+  } catch (error) {
+    console.error('Error updating blog:', error);
+    res.status(500).json({ message: 'Error updating blog' });
+  }
+};
+
+exports.deleteBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findByIdAndDelete(req.params.id);
+    
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+    
+    res.json({ message: 'Blog deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting blog:', error);
+    res.status(500).json({ message: 'Error deleting blog' });
   }
 };

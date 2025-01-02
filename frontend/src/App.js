@@ -16,6 +16,11 @@ import EditRecipe from './components/EditRecipe';
 import MyRecipes from './pages/MyRecipes';
 import RecipeDetail from './pages/RecipeDetail';
 import CreatorRecipes from './pages/CreatorRecipes';
+import BlogList from './components/BlogList';
+import BlogPostForm from './components/admin/BlogPostForm';
+import BlogPage from './pages/BlogPage';
+import BlogDetail from './pages/BlogDetail';
+import UserBlogManagement from './components/UserBlogManagement';
 import './App.css';
 
 // Wrapper component to handle navigation logic
@@ -197,6 +202,14 @@ function AppContent() {
           />
           <Route path="/recipe/:id" element={<RecipeDetail />} />
           <Route path="/creator/:creatorId" element={<CreatorRecipes />} />
+          <Route path="/blogs" element={<BlogPage />} />
+          <Route path="/blogs/:id" element={<BlogDetail />} />
+          <Route 
+            path="/my-articles" 
+            element={isLoggedIn ? <UserBlogManagement /> : <Navigate to="/login" />} 
+          />
+          <Route path="/create-blog" element={isLoggedIn ? <BlogPostForm /> : <Navigate to="/login" />} />
+          <Route path="/edit-blog/:id" element={isLoggedIn ? <BlogPostForm /> : <Navigate to="/login" />} />
         </Routes>
       </main>
       <Footer />

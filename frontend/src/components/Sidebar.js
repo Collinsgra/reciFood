@@ -4,16 +4,12 @@ import { Menu, X, Home, User, Utensils, ShoppingBag, Grid, FileText, LogOut } fr
 import styles from './Sidebar.module.css';
 
 const Sidebar = ({ isOpen, toggleSidebar, user, onLogout }) => {
-  const mobileMenuItems = [
+  const menuItems = [
     { icon: Home, label: "Home", path: "/" },
     { icon: Utensils, label: "My Recipes", path: "/my-recipes" },
+    { icon: FileText, label: "My Articles", path: "/my-articles" },
     { icon: ShoppingBag, label: "Shopping List", path: "/shopping-list" },
     { icon: Grid, label: "Categories", path: "/categories" },
-  ];
-
-  const desktopMenuItems = [
-    ...mobileMenuItems,
-    { icon: FileText, label: "Articles", path: "/articles" },
   ];
 
   const handleLinkClick = () => {
@@ -51,7 +47,7 @@ const Sidebar = ({ isOpen, toggleSidebar, user, onLogout }) => {
         
         <nav className={styles.sidebarContent}>
           <ul className={styles.desktopMenu}>
-            {desktopMenuItems.map((item) => (
+            {menuItems.map((item) => (
               <li key={item.label}>
                 <Link to={item.path} onClick={handleLinkClick}>
                   <item.icon size={16} />
@@ -61,7 +57,7 @@ const Sidebar = ({ isOpen, toggleSidebar, user, onLogout }) => {
             ))}
           </ul>
           <ul className={styles.mobileMenu}>
-            {mobileMenuItems.map((item) => (
+            {menuItems.map((item) => (
               <li key={item.label}>
                 <Link to={item.path} onClick={handleLinkClick}>
                   <item.icon size={20} />

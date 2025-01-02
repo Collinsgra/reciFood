@@ -52,6 +52,10 @@ const recipeSchema = new mongoose.Schema({
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending'
   },
+  featured: {
+    type: Boolean,
+    default: false
+  }
 }, {
   timestamps: true
 });

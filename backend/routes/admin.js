@@ -1,84 +1,71 @@
 const express = require('express');
-const { body, param } = require('express-validator');
 const { protect, admin } = require('../middleware/auth');
-const adminController = require('../controllers/admin');
-const rateLimit = require('express-rate-limit');
+const upload = require('../middleware/upload');
+const {
+  getDashboardStats,
+  getUsers,
+  updateUserRole,
+  suspendUser,
+  deleteUser,
+  getRecipes,
+  approveRecipe,
+  rejectRecipe,
+  deleteRecipe,
+  getFeaturedRecipes,
+  featureRecipe,
+  unfeatureRecipe,
+  getBlogs,
+  createBlog,
+  updateBlog,
+  deleteBlog,
+  getBlog,
+  getAppSettings,
+  updateAppSettings,
+  getAdminProfile,
+  updateAdminProfile,
+  changeAdminPassword
+} = require('../controllers/admin');
 
 const router = express.Router();
 
-// Apply protect and admin middleware to all routes
-router.use(protect, admin);
+// Apply authentication middleware to all routes
+router.use(protect);
+router.use(admin);
 
-// Apply rate limiting to all admin routes
-const adminLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
-});
+// Dashboard
+router.get('/dashboard-stats', getDashboardStats);
 
-router.use(adminLimiter);
+// User management
+router.get('/users', getUsers);
+router.put('/users/:id/role', updateUserRole);
+router.put('/users/:id/suspend', suspendUser);
+router.delete('/users/:id', deleteUser);
 
-router.get('/dashboard-stats', adminController.getDashboardStats);
-router.get('/recent-activity', adminController.getRecentActivity);
-router.get('/users', adminController.getUsers);
-router.put('/users/:id/role', adminController.updateUserRole);
-router.put('/users/:id/suspend', adminController.suspendUser);
-router.delete('/users/:id', adminController.deleteUser);
+// Recipe management
+router.get('/recipes', getRecipes);
+router.put('/recipes/:id/approve', approveRecipe);
+router.put('/recipes/:id/reject', rejectRecipe);
+router.delete('/recipes/:id', deleteRecipe);
 
-router.get('/recipes', adminController.getRecipes);
-router.put('/recipes/:id/approve', adminController.approveRecipe);
-router.put('/recipes/:id/reject', adminController.rejectRecipe);
-router.delete('/recipes/:id', adminController.deleteRecipe);
+// Featured recipes
+router.get('/featured-recipes', getFeaturedRecipes);
+router.put('/recipes/:id/feature', featureRecipe);
+router.put('/recipes/:id/unfeature', unfeatureRecipe);
 
-router.get('/featured-recipes', adminController.getFeaturedRecipes);
-router.get('/blog-posts', adminController.getBlogPosts);
-router.get('/analytics', adminController.getAnalytics);
-router.get('/comments', adminController.getComments);
-router.put('/comments/:id/status',
-  [
-    param('id').isMongoId(),
-    body('status').isIn(['approved', 'rejected', 'pending'])
-  ],
-  adminController.updateCommentStatus
-);
+// Blog management
+router.get('/blogs', getBlogs);
+router.get('/blogs/:id', getBlog);
+router.post('/blogs', upload.single('picture'), createBlog);
+router.put('/blogs/:id', upload.single('picture'), updateBlog);
+router.delete('/blogs/:id', deleteBlog);
 
-router.post('/notifications',
-  [
-    body('title').notEmpty().trim(),
-    body('content').notEmpty().trim(),
-    body('recipients').isArray().notEmpty()
-  ],
-  adminController.sendNotification
-);
+// App settings
+router.get('/settings', getAppSettings);
+router.put('/settings', updateAppSettings);
 
-router.get('/app-settings', adminController.getAppSettings);
-router.put('/app-settings',
-  [
-    body('appName').optional().trim(),
-    body('logo').optional().isURL(),
-    body('allowUserRegistration').optional().isBoolean(),
-    body('enableComments').optional().isBoolean(),
-    body('enableRatings').optional().isBoolean(),
-    body('maintenanceMode').optional().isBoolean(),
-    body('theme').optional().isIn(['light', 'dark'])
-  ],
-  adminController.updateAppSettings
-);
-
-router.get('/profile', adminController.getAdminProfile);
-router.put('/profile',
-  [
-    body('name').optional().trim(),
-    body('email').optional().isEmail().normalizeEmail()
-  ],
-  adminController.updateAdminProfile
-);
-
-router.put('/change-password',
-  [
-    body('currentPassword').notEmpty(),
-    body('newPassword').isLength({ min: 6 })
-  ],
-  adminController.changeAdminPassword
-);
+// Admin profile
+router.get('/profile', getAdminProfile);
+router.put('/profile', updateAdminProfile);
+router.put('/change-password', changeAdminPassword);
 
 module.exports = router;

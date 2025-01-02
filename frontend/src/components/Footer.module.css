@@ -3,6 +3,9 @@
   color: #333;
   padding: 3rem 0 1rem;
   border-top: 1px solid #e0e0e0;
+  width: 100%;
+  position: relative;
+  z-index: 10;
 }
 
 .footerContent {
@@ -89,10 +92,15 @@
 @media (max-width: 768px) {
   .footerContent {
     flex-direction: column;
+    padding: 0 1rem;
   }
 
   .footerSection {
     margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .socialIcons {
+    justify-content: center;
   }
 }
-
