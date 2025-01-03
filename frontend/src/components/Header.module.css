@@ -3,13 +3,14 @@
   top: 0;
   left: 0;
   right: 0;
+  height: 60px;
+  background-color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  background-color: #f8f8f8;
-  z-index: 1000; /* Ensure header is always on top */
-  height: 60px;
+  padding: 0 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
 }
 
 .logoContainer {
@@ -17,12 +18,17 @@
   align-items: center;
 }
 
+.logoContainer a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
 .logo {
   width: 40px;
   height: 40px;
-  margin-right: 10px;
-  font-size: 1.5rem;
-  font-weight: bold;
+  margin-right: 0.5rem;
 }
 
 .appName {
@@ -30,58 +36,75 @@
   font-weight: bold;
 }
 
-.nav {
+.desktopNav {
+  display: none;
+}
+
+.mobileIcons {
   display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
-.nav a, .nav button {
-  text-decoration: none;
+.menuButton {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileIcon {
   color: #333;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
-.hamburger {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #333;
+  transition: background-color 0.2s;
 }
 
-.sidebarToggle {
-  display: none; /* Hide the sidebar toggle in header */
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0 10px;
+.profileIcon:hover .avatar {
+  background-color: #e0e0e0;
 }
 
-@media (max-width: 768px) {
-  .hamburger {
-    display: block;
-  }
-
-  .nav {
-    display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    background-color: #f8f8f8;
-    padding: 1rem;
-  }
-
-  .nav.open {
+@media (min-width: 769px) {
+  .desktopNav {
     display: flex;
+    gap: 2rem;
+    align-items: center;
   }
-}
 
-@media (min-width: 768px) {
-  .sidebarToggle {
+  .desktopNav a,
+  .desktopNav button {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+  }
+
+  .desktopNav a:hover,
+  .desktopNav button:hover {
+    color: #000;
+  }
+
+  .mobileIcons .menuButton {
     display: none;
   }
 }
-

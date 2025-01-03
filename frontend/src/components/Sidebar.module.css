@@ -1,16 +1,5 @@
 .menuButton {
-  position: fixed;
-  top: 80px; /* Position below header */
-  left: 1rem;
-  z-index: 100;
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: none;
-  padding: 8px;
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: none; /* Remove the floating menu button completely */
 }
 
 .sidebar {
@@ -150,49 +139,12 @@
 }
 
 @media (max-width: 768px) {
-  .menuButton {
-    display: block;
-  }
-  
   .sidebar {
-    transform: translateX(-100%);
+    display: none; /* Hide the entire sidebar on mobile */
   }
   
   .sidebar.open {
-    transform: translateX(0);
-  }
-  
-  .closeButton {
-    display: block;
-  }
-  
-  .desktopMenu {
     display: none;
-  }
-  
-  .mobileMenu {
-    display: block;
-  }
-  
-  .mobileMenu li a {
-    padding: 1rem;
-  }
-  
-  .mobileMenu li a svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .userProfile {
-    background-color: #f5f5f5;
-  }
-
-  .userProfile:hover {
-    background-color: #e0e0e0;
-  }
-
-  .profileIcon {
-    display: block;
   }
 }
 

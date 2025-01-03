@@ -140,6 +140,7 @@ function AppContent() {
         isLoggedIn={isLoggedIn} 
         isAdmin={isAdmin} 
         onLogout={handleLogout} 
+        user={user} // Add this line
         toggleSidebar={toggleSidebar}
       />
       {isLoggedIn && user && !isAdmin && (

@@ -73,4 +73,9 @@ main {
     margin-left: 0 !important;
     width: 100% !important;
   }
+
+  /* Hide sidebar on mobile */
+  .sidebar {
+    display: none !important;
+  }
 }

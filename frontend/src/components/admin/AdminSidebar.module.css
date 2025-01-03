@@ -41,3 +41,9 @@
 .icon {
   margin-right: 10px;
 }
+
+@media (max-width: 768px) {
+  .adminSidebar {
+    display: none;
+  }
+}

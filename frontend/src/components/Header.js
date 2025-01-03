@@ -1,41 +1,70 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
+import { Menu, User } from 'lucide-react';
 import styles from './Header.module.css';
+import MobileMenu from './MobileMenu';
 import logo from '../assets/logo.png';
 
-const Header = ({ isLoggedIn, isAdmin, onLogout, toggleSidebar }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const Header = ({ isLoggedIn, isAdmin, onLogout, user }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <header className={styles.header}>
-      <button className={styles.sidebarToggle} onClick={toggleSidebar}>
-        ☰
-      </button>
-      <div className={styles.logoContainer}>
-        <img src={logo} alt="Recipe App Logo" className={styles.logo} />
-        <div className={styles.appName}>Recipe App</div>
-      </div>
-      <button className={styles.hamburger} onClick={toggleMenu}>
-        ☰
-      </button>
-      <nav className={`${styles.nav} ${isMenuOpen ? styles.open : ''}`}>
-        <Link to="/" onClick={toggleMenu}>Home</Link>
-        <Link to="/blogs" onClick={toggleMenu}>Blogs</Link>
-        <Link to="/about" onClick={toggleMenu}>About</Link>
-        <Link to="/contact" onClick={toggleMenu}>Contact</Link>
-        {isLoggedIn && <Link to="/profile" onClick={toggleMenu}>Profile</Link>}
-        {isAdmin && <Link to="/admin" onClick={toggleMenu}>Admin Dashboard</Link>}
-        {isLoggedIn ? (
-          <button onClick={() => { onLogout(); toggleMenu(); }}>Logout</button>
-        ) : (
-          <Link to="/login" onClick={toggleMenu}>Login</Link>
-        )}
-      </nav>
-    </header>
+    <>
+      <header className={styles.header}>
+        <div className={styles.logoContainer}>
+          <Link to="/">
+            <img src={logo} alt="Recipe App Logo" className={styles.logo} />
+            <span className={styles.appName}>Recipe App</span>
+          </Link>
+        </div>
+
+        {/* Desktop Navigation */}
+        <nav className={styles.desktopNav}>
+          <Link to="/">Home</Link>
+          <Link to="/blogs">Blogs</Link>
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
+          {isLoggedIn && !isAdmin && <Link to="/my-recipes">My Recipes</Link>}
+          {isAdmin && <Link to="/admin">Admin Dashboard</Link>}
+          {isLoggedIn ? (
+            <button onClick={onLogout}>Logout</button>
+          ) : (
+            <Link to="/login">Login</Link>
+          )}
+        </nav>
+
+        {/* Mobile Header Icons */}
+        <div className={styles.mobileIcons}>
+          {isLoggedIn && (
+            <Link 
+              to={isAdmin ? "/admin/profile" : "/profile"} 
+              className={styles.profileIcon}
+              title={user?.name || 'Profile'}
+            >
+              <div className={styles.avatar}>
+                <span>{user?.name?.[0]?.toUpperCase() || 'U'}</span>
+              </div>
+            </Link>
+          )}
+          <button className={styles.menuButton} onClick={toggleMobileMenu}>
+            <Menu size={24} />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Menu */}
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        isLoggedIn={isLoggedIn}
+        isAdmin={isAdmin}
+        onLogout={onLogout}
+      />
+    </>
   );
 };
 
