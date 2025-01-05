@@ -9,11 +9,13 @@ import CommentManagement from '../components/admin/CommentManagement';
 import NotificationsMessaging from '../components/admin/NotificationsMessaging';
 import AppSettings from '../components/admin/AppSettings';
 import AdminProfile from '../components/admin/AdminProfile';
+import AdminSidebar from '../components/admin/AdminSidebar';
 import styles from './AdminDashboard.module.css';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ isSidebarOpen, toggleSidebar }) => {
   return (
     <div className={styles.adminDashboard}>
+      <AdminSidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className={styles.content}>
         <Routes>
           <Route index element={<DashboardOverview />} />

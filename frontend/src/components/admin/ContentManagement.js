@@ -1,247 +1,297 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit, Trash2, Star, StarOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Star, StarOff, Search, Filter } from 'lucide-react';
 import styles from './AdminComponents.module.css';
 import BlogPostForm from './BlogPostForm';
 import Modal from '../Modal';
 
 const ContentManagement = () => {
-  const [featuredRecipes, setFeaturedRecipes] = useState([]);
-  const [blogs, setBlogs] = useState([]);
+  const [content, setContent] = useState({
+    recipes: [],
+    blogs: [],
+    featuredRecipes: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [blogToDelete, setBlogToDelete] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [activeTab, setActiveTab] = useState('recipes');
 
-  const fetchContent = useCallback(async () => {
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const headers = {
-        Authorization: `Bearer ${token}`
-      };
-
-      const [recipesResponse, blogsResponse] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_API_URL}/api/admin/featured-recipes`, { headers }),
-        axios.get(`${process.env.REACT_APP_API_URL}/api/admin/blogs`, { headers })
+      const [recipesRes, blogsRes, featuredRes] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_API_URL}/api/admin/recipes`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }),
+        axios.get(`${process.env.REACT_APP_API_URL}/api/admin/blogs`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        }),
+        axios.get(`${process.env.REACT_APP_API_URL}/api/admin/featured-recipes`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        })
       ]);
 
-      setFeaturedRecipes(recipesResponse.data);
-      setBlogs(blogsResponse.data);
+      setContent({
+        recipes: recipesRes.data,
+        blogs: blogsRes.data,
+        featuredRecipes: featuredRes.data
+      });
     } catch (error) {
       console.error('Error fetching content:', error);
-      setError(error.response?.data?.message || 'Failed to load content. Please try again later.');
+      setError('Failed to load content. Please try again later.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    fetchContent();
-  }, [fetchContent]);
-
-  const handleFeatureRecipe = async (recipeId, featured) => {
+  const handleContentAction = async (id, action, type) => {
     try {
-      const token = localStorage.getItem('token');
-      const endpoint = featured ? 'unfeature' : 'feature';
-      
+      const endpoint = `${process.env.REACT_APP_API_URL}/api/admin/${type}/${id}/${action}`;
       await axios.put(
-        `${process.env.REACT_APP_API_URL}/api/admin/recipes/${recipeId}/${endpoint}`,
+        endpoint,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
-      
       fetchContent();
     } catch (error) {
-      console.error('Error updating recipe feature status:', error);
-      setError(error.response?.data?.message || 'Failed to update recipe feature status.');
+      console.error(`Error performing ${action} on ${type}:`, error);
+      setError(`Failed to ${action} ${type}. Please try again.`);
+    }
+  };
+
+  const handleDeleteClick = (item, type) => {
+    setItemToDelete({ ...item, type });
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete) return;
+
+    try {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/admin/${itemToDelete.type}s/${itemToDelete._id}`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
+      fetchContent();
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      setError('Failed to delete item. Please try again.');
+    } finally {
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
     }
   };
 
   const handleBlogSubmit = async (formData) => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data'
-      };
-
       if (editingBlog) {
         await axios.put(
           `${process.env.REACT_APP_API_URL}/api/admin/blogs/${editingBlog._id}`,
           formData,
-          { headers }
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'multipart/form-data'
+            }
+          }
         );
       } else {
         await axios.post(
           `${process.env.REACT_APP_API_URL}/api/admin/blogs`,
           formData,
-          { headers }
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'multipart/form-data'
+            }
+          }
         );
       }
-      
       setShowBlogForm(false);
       setEditingBlog(null);
       fetchContent();
     } catch (error) {
       console.error('Error saving blog:', error);
-      setError(error.response?.data?.message || 'Failed to save blog post.');
+      setError('Failed to save blog post. Please try again.');
     }
   };
 
-  const handleDeleteClick = (blog) => {
-    setBlogToDelete(blog);
-    setDeleteModalOpen(true);
+  const filteredContent = {
+    recipes: content.recipes.filter(recipe =>
+      recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (filterType === 'all' || recipe.status === filterType)
+    ),
+    blogs: content.blogs.filter(blog =>
+      blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
   };
 
-  const handleDeleteConfirm = async () => {
-    if (blogToDelete) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(
-          `${process.env.REACT_APP_API_URL}/api/admin/blogs/${blogToDelete._id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-        
-        setDeleteModalOpen(false);
-        setBlogToDelete(null);
-        fetchContent();
-      } catch (error) {
-        console.error('Error deleting blog:', error);
-        setError(error.response?.data?.message || 'Failed to delete blog post.');
-      }
-    }
-  };
-
-  if (loading) {
-    return <div className={styles.loading}>Loading content...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className={styles.error}>
-        <p>{error}</p>
-        <button onClick={fetchContent} className={styles.retryButton}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  const filteredBlogs = blogs.filter(blog =>
-    blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    blog.content.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  if (loading) return <div className={styles.loading}>Loading content...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
     <div className={styles.contentManagement}>
-      <div className={styles.section}>
-        <h2>Featured Recipes</h2>
-        <div className={styles.recipeGrid}>
-          {featuredRecipes.length === 0 ? (
-            <p>No featured recipes found.</p>
-          ) : (
-            featuredRecipes.map(recipe => (
-              <div key={recipe._id} className={styles.recipeCard}>
-                {recipe.picture && (
-                  <img
-                    src={`${process.env.REACT_APP_API_URL}${recipe.picture}`}
-                    alt={recipe.title}
-                  />
-                )}
-                <div className={styles.recipeContent}>
-                  <h3>{recipe.title}</h3>
-                  <button
-                    onClick={() => handleFeatureRecipe(recipe._id, true)}
-                    className={styles.featureButton}
-                  >
-                    <StarOff size={16} />
-                    Remove from Featured
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
+      <div className={styles.contentHeader}>
+        <h1>Content Management</h1>
+        <div className={styles.contentControls}>
+          <div className={styles.searchBar}>
+            <Search size={20} />
+            <input
+              type="text"
+              placeholder="Search content..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className={styles.filterControl}>
+            <Filter size={20} />
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <div className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2>Blog Posts</h2>
+      <div className={styles.tabsContainer}>
+        <div className={styles.tabs}>
           <button
-            onClick={() => {
-              setEditingBlog(null);
-              setShowBlogForm(true);
-            }}
-            className={styles.createButton}
+            className={`${styles.tab} ${activeTab === 'recipes' ? styles.active : ''}`}
+            onClick={() => setActiveTab('recipes')}
           >
-            <Plus size={16} />
-            Create New Blog Post
+            Recipes
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'blogs' ? styles.active : ''}`}
+            onClick={() => setActiveTab('blogs')}
+          >
+            Blog Posts
           </button>
         </div>
 
-        <input
-          type="text"
-          placeholder="Search blog posts..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={styles.searchInput}
-        />
-
-        <div className={styles.blogGrid}>
-          {filteredBlogs.length === 0 ? (
-            <p>No blog posts found.</p>
-          ) : (
-            filteredBlogs.map(blog => (
-              <div key={blog._id} className={styles.blogCard}>
-                {blog.picture && (
-                  <img
-                    src={`${process.env.REACT_APP_API_URL}${blog.picture}`}
-                    alt={blog.title}
-                  />
-                )}
-                <div className={styles.blogContent}>
-                  <h3>{blog.title}</h3>
-                  <p>{blog.content.substring(0, 100)}...</p>
-                  <div className={styles.blogMeta}>
-                    <span>By {blog.author.name}</span>
-                    <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+        {activeTab === 'recipes' ? (
+          <div className={styles.recipesSection}>
+            <div className={styles.contentGrid}>
+              {filteredContent.recipes.map(recipe => (
+                <div key={recipe._id} className={styles.contentCard}>
+                  <div className={styles.cardImage}>
+                    {recipe.picture ? (
+                      <img
+                        src={`${process.env.REACT_APP_API_URL}${recipe.picture}`}
+                        alt={recipe.title}
+                      />
+                    ) : (
+                      <div className={styles.noImage}>No Image</div>
+                    )}
+                    <div className={styles.cardStatus} data-status={recipe.status}>
+                      {recipe.status}
+                    </div>
                   </div>
-                  <div className={styles.blogActions}>
-                    <button
-                      onClick={() => {
-                        setEditingBlog(blog);
-                        setShowBlogForm(true);
-                      }}
-                      className={styles.editButton}
-                    >
-                      <Edit size={16} />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(blog)}
-                      className={styles.deleteButton}
-                    >
-                      <Trash2 size={16} />
-                      Delete
-                    </button>
+                  <div className={styles.cardContent}>
+                    <h3>{recipe.title}</h3>
+                    <p>By {recipe.creatorName}</p>
+                    <div className={styles.cardActions}>
+                      <button
+                        onClick={() => handleContentAction(recipe._id, 'approve', 'recipes')}
+                        className={styles.approveButton}
+                        disabled={recipe.status === 'approved'}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => handleContentAction(recipe._id, 'reject', 'recipes')}
+                        className={styles.rejectButton}
+                        disabled={recipe.status === 'rejected'}
+                      >
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => handleContentAction(recipe._id, recipe.featured ? 'unfeature' : 'feature', 'recipes')}
+                        className={styles.featureButton}
+                      >
+                        {recipe.featured ? <StarOff size={20} /> : <Star size={20} />}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(recipe, 'recipe')}
+                        className={styles.deleteButton}
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className={styles.blogsSection}>
+            <div className={styles.sectionHeader}>
+              <button
+                onClick={() => {
+                  setEditingBlog(null);
+                  setShowBlogForm(true);
+                }}
+                className={styles.createButton}
+              >
+                <Plus size={20} />
+                Create New Blog Post
+              </button>
+            </div>
+            <div className={styles.contentGrid}>
+              {filteredContent.blogs.map(blog => (
+                <div key={blog._id} className={styles.contentCard}>
+                  <div className={styles.cardImage}>
+                    {blog.picture ? (
+                      <img
+                        src={`${process.env.REACT_APP_API_URL}${blog.picture}`}
+                        alt={blog.title}
+                      />
+                    ) : (
+                      <div className={styles.noImage}>No Image</div>
+                    )}
+                  </div>
+                  <div className={styles.cardContent}>
+                    <h3>{blog.title}</h3>
+                    <p>By {blog.author.name}</p>
+                    <div className={styles.cardActions}>
+                      <button
+                        onClick={() => {
+                          setEditingBlog(blog);
+                          setShowBlogForm(true);
+                        }}
+                        className={styles.editButton}
+                      >
+                        <Edit size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(blog, 'blog')}
+                        className={styles.deleteButton}
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {showBlogForm && (
@@ -257,7 +307,7 @@ const ContentManagement = () => {
 
       <Modal isOpen={deleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
         <h2>Confirm Delete</h2>
-        <p>Are you sure you want to delete this blog post?</p>
+        <p>Are you sure you want to delete this {itemToDelete?.type}?</p>
         <div className={styles.modalActions}>
           <button onClick={handleDeleteConfirm} className={styles.deleteButton}>
             Delete

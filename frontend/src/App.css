@@ -11,71 +11,37 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
 }
 
 main {
   flex: 1;
   padding: 20px;
-  margin-left: 0;
   margin-top: 60px; /* Height of the header */
-  transition: margin-left 0.3s ease;
   min-height: calc(100vh - 60px - 300px); /* Subtract header and footer height */
+  transition: margin-left 0.3s ease;
 }
 
-/* When sidebar is closed */
-.app:not(.sidebar-open) main {
+/* Add admin-specific styling */
+.app.admin main {
   margin-left: 0;
 }
 
-/* When admin is logged in */
-.app.admin main {
-  margin-left: 250px; /* Width of the AdminSidebar */
-}
-
-/* When regular user is logged in and sidebar is open */
-.app.sidebar-open main {
-  margin-left: 250px;
+.app.admin.sidebar-open main {
+  margin-left: 300px;
 }
 
 /* Footer positioning */
 .app > footer {
-  margin-left: 0;
-  transition: margin-left 0.3s ease;
   width: 100%;
   position: relative;
   z-index: 10;
 }
 
-.app.admin > footer {
-  margin-left: 250px;
-  width: calc(100% - 250px);
-}
-
-.app.sidebar-open > footer {
-  margin-left: 250px;
-  width: calc(100% - 250px);
-}
-
 @media (max-width: 768px) {
-  main {
-    padding: 10px;
-    margin-left: 0 !important;
-  }
-
-  .app.sidebar-open main,
+  .app.admin.sidebar-open main,
   .app.admin main {
-    margin-left: 0 !important;
-  }
-
-  .app > footer,
-  .app.admin > footer,
-  .app.sidebar-open > footer {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  /* Hide sidebar on mobile */
-  .sidebar {
-    display: none !important;
+    margin-left: 0;
   }
 }
+

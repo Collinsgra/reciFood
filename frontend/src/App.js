@@ -140,7 +140,7 @@ function AppContent() {
         isLoggedIn={isLoggedIn} 
         isAdmin={isAdmin} 
         onLogout={handleLogout} 
-        user={user} // Add this line
+        user={user} 
         toggleSidebar={toggleSidebar}
       />
       {isLoggedIn && user && !isAdmin && (
@@ -151,8 +151,13 @@ function AppContent() {
           onLogout={handleLogout}
         />
       )}
-      {isAdmin && <AdminSidebar />}
-      <main>
+      {isAdmin && (
+        <AdminSidebar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+        />
+      )}
+      <main className={`${isAdmin ? 'admin' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

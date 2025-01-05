@@ -1,37 +1,111 @@
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 48;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.sidebarOverlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
 .adminSidebar {
-  width: 250px;
+  position: fixed;
+  top: 60px; /* Adjust this value to match your header height */
+  left: -300px;
+  width: 300px;
   height: calc(100vh - 60px); /* Subtract header height */
   background-color: #2c3e50;
   color: #ecf0f1;
-  padding: 20px;
-  position: fixed;
+  z-index: 49;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.adminSidebar.open {
   left: 0;
-  top: 60px; /* Start below header */
-  z-index: 2; /* Above content but below header */
+}
+
+@media (max-width: 768px) {
+  .adminSidebar {
+    width: 100%;
+    left: -100%;
+  }
+
+  .adminSidebar.open {
+    left: 0;
+  }
+
+  .nav {
+    padding: 1rem;
+  }
+
+  .navItem {
+    padding: 1rem;
+    font-size: 16px;
+  }
+
+  .logo {
+    padding: 1rem;
+  }
+
+  .logo h2 {
+    font-size: 1.25rem;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #ecf0f1;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 1;
+}
+
+.closeButton:hover {
+  color: #fff;
 }
 
 .logo {
-  margin-bottom: 30px;
+  padding: 2rem 1.5rem;
   text-align: center;
+  border-bottom: 1px solid #34495e;
 }
 
 .logo h2 {
-  font-size: 24px;
+  margin: 0;
+  font-size: 1.5rem;
   color: #ecf0f1;
 }
 
 .nav {
+  flex: 1;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .navItem {
   display: flex;
   align-items: center;
-  padding: 10px;
+  gap: 0.75rem;
+  padding: 0.75rem;
   color: #ecf0f1;
   text-decoration: none;
-  transition: background-color 0.3s;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
 }
 
 .navItem:hover {
@@ -39,11 +113,5 @@
 }
 
 .icon {
-  margin-right: 10px;
-}
-
-@media (max-width: 768px) {
-  .adminSidebar {
-    display: none;
-  }
+  flex-shrink: 0;
 }
