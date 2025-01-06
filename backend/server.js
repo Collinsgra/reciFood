@@ -70,33 +70,15 @@ const blogRoutes = require('./routes/blogs');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://reci-food-client.vercel.app/', 'http://localhost:3000']
+    : 'http://localhost:3000',
+  credentials: true
+}));
+
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Health check route
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/recipes', recipeRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/blogs', blogRoutes);
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
-});
-
-// Handle 404 errors
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
 
 // MongoDB connection
 mongoose
@@ -110,6 +92,37 @@ mongoose
   .catch((err) => {
     console.error('MongoDB connection error:', err);
   });
+
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', environment: process.env.NODE_ENV });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/recipes', recipeRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/blogs', blogRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ 
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// Handle 404 errors
+app.use((req, res) => {
+  res.status(404).json({ 
+    message: 'Route not found',
+    path: req.path,
+    method: req.method 
+  });
+});
 
 // Export the Express API
 module.exports = app;
