@@ -28,7 +28,7 @@ function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768); // Update the initial sidebar state to be closed on mobile
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,7 +48,11 @@ function AppContent() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsSidebarOpen(window.innerWidth > 768);
+      if (window.innerWidth > 768) { // Update the useEffect for sidebar state
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -157,7 +161,7 @@ function AppContent() {
           toggleSidebar={toggleSidebar}
         />
       )}
-      <main className={`${isAdmin ? 'admin' : ''}`}>
+      <main className={`${isAdmin ? 'admin' : ''} ${isSidebarOpen && (isAdmin || isLoggedIn) ? 'sidebar-open' : ''}`}> {/* Update the main className to handle sidebar margin for both admin and regular users */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

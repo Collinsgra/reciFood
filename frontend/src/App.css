@@ -17,15 +17,22 @@ body {
 main {
   flex: 1;
   padding: 20px;
-  margin-top: 60px; /* Height of the header */
-  min-height: calc(100vh - 60px - 300px); /* Subtract header and footer height */
+  margin-top: 60px;
+  min-height: calc(100vh - 60px - 300px);
   transition: margin-left 0.3s ease;
 }
 
-/* Add admin-specific styling */
+/* Add styling for regular user sidebar */
+main.sidebar-open {
+  margin-left: 300px;
+}
+
+/* Update admin-specific styling */
 .app.admin main {
   margin-left: 0;
 }
+
+/* Add admin-specific styling */
 
 .app.admin.sidebar-open main {
   margin-left: 300px;
@@ -40,8 +47,8 @@ main {
 
 @media (max-width: 768px) {
   .app.admin.sidebar-open main,
-  .app.admin main {
+  .app.admin main,
+  main.sidebar-open {
     margin-left: 0;
   }
 }
-

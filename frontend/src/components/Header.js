@@ -34,11 +34,11 @@ const Header = ({ isLoggedIn, isAdmin, onLogout, user, toggleSidebar }) => {
               <Menu size={24} />
             </button>
           ) : (
-            isAdmin && (
+            (isAdmin || isLoggedIn) && (
               <button 
                 className={styles.menuButton} 
                 onClick={toggleSidebar}
-                aria-label="Toggle admin menu"
+                aria-label="Toggle sidebar menu"
               >
                 <Menu size={24} />
               </button>
