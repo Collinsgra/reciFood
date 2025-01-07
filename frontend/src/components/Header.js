@@ -45,7 +45,7 @@ const Header = ({ isLoggedIn, isAdmin, onLogout, user, toggleSidebar }) => {
             )
           )}
           <Link to="/" className={styles.logoContainer}>
-            <span className={styles.appName}>Recipe App</span>
+            <span className={styles.appName}>ReciFood</span>
           </Link>
         </div>
 
