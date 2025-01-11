@@ -87,7 +87,6 @@ function AppContent() {
     }
   };
 
-  // Removed handleLogin function
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem('token');

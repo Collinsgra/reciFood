@@ -19,8 +19,6 @@ const {
   updateBlog,
   deleteBlog,
   getBlog,
-  getAppSettings,
-  updateAppSettings,
   getAdminProfile,
   updateAdminProfile,
   changeAdminPassword
@@ -58,10 +56,6 @@ router.get('/blogs/:id', getBlog);
 router.post('/blogs', upload.single('picture'), createBlog);
 router.put('/blogs/:id', upload.single('picture'), updateBlog);
 router.delete('/blogs/:id', deleteBlog);
-
-// App settings
-router.get('/settings', getAppSettings);
-router.put('/settings', updateAppSettings);
 
 // Admin profile
 router.get('/profile', getAdminProfile);

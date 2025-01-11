@@ -1,9 +1,7 @@
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
-const Comment = require('../models/Comment');
-const AppSettings = require('../models/AppSettings');
 const BlogPost = require('../models/BlogPost');
-const Blog = require('../models/Blog'); // Import the Blog model
+const Blog = require('../models/Blog');
 const { validationResult } = require('express-validator');
 
 exports.getDashboardStats = async (req, res) => {
@@ -287,35 +285,6 @@ exports.deleteBlogPost = async (req, res) => {
   }
 };
 
-exports.getAnalytics = async (req, res) => {
-  try {
-    const lastMonth = new Date();
-    lastMonth.setMonth(lastMonth.getMonth() - 1);
-
-    const userGrowth = await User.countDocuments({ createdAt: { $gte: lastMonth } });
-    const recipeGrowth = await Recipe.countDocuments({ createdAt: { $gte: lastMonth } });
-    const commentGrowth = await Comment.countDocuments({ createdAt: { $gte: lastMonth } });
-
-    const topCategories = await Recipe.aggregate([
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
-      { $limit: 5 }
-    ]);
-
-    const analytics = {
-      userGrowth,
-      recipeGrowth,
-      commentGrowth,
-      topCategories
-    };
-
-    res.json(analytics);
-  } catch (error) {
-    console.error('Error in getAnalytics:', error);
-    res.status(500).json({ message: 'Error fetching analytics' });
-  }
-};
-
 exports.getComments = async (req, res) => {
   try {
     const comments = await Comment.find()
@@ -329,80 +298,34 @@ exports.getComments = async (req, res) => {
   }
 };
 
-exports.updateCommentStatus = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
 
-  try {
-    const comment = await Comment.findByIdAndUpdate(
-      req.params.id,
-      { status: req.body.status },
-      { new: true, runValidators: true }
-    );
+// exports.getAppSettings = async (req, res) => {
+//   try {
+//     let settings = await AppSettings.findOne();
+//     if (!settings) {
+//       settings = await AppSettings.create({});
+//     }
+//     res.json(settings);
+//   } catch (error) {
+//     console.error('Error in getAppSettings:', error);
+//     res.status(500).json({ message: 'Error fetching app settings' });
+//   }
+// };
 
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
-    }
+// exports.updateAppSettings = async (req, res) => {
+//   const errors = validationResult(req);
+//   if (!errors.isEmpty()) {
+//     return res.status(400).json({ errors: errors.array() });
+//   }
 
-    res.json(comment);
-  } catch (error) {
-    console.error('Error in updateCommentStatus:', error);
-    res.status(500).json({ message: 'Error updating comment status' });
-  }
-};
-
-exports.sendNotification = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  try {
-    // Implement your notification logic here
-    // This could involve sending emails, push notifications, or saving to a notifications collection
-    const { title, content, recipients } = req.body;
-
-    // For demonstration, we'll just log the notification
-    console.log(`Sending notification: ${title} to ${recipients}`);
-
-    // In a real implementation, you might use a service like Firebase Cloud Messaging or send emails
-
-    res.json({ message: 'Notification sent successfully' });
-  } catch (error) {
-    console.error('Error in sendNotification:', error);
-    res.status(500).json({ message: 'Error sending notification' });
-  }
-};
-
-exports.getAppSettings = async (req, res) => {
-  try {
-    let settings = await AppSettings.findOne();
-    if (!settings) {
-      settings = await AppSettings.create({});
-    }
-    res.json(settings);
-  } catch (error) {
-    console.error('Error in getAppSettings:', error);
-    res.status(500).json({ message: 'Error fetching app settings' });
-  }
-};
-
-exports.updateAppSettings = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  try {
-    const settings = await AppSettings.findOneAndUpdate({}, req.body, { new: true, upsert: true, runValidators: true });
-    res.json(settings);
-  } catch (error) {
-    console.error('Error in updateAppSettings:', error);
-    res.status(500).json({ message: 'Error updating app settings' });
-  }
-};
+//   try {
+//     const settings = await AppSettings.findOneAndUpdate({}, req.body, { new: true, upsert: true, runValidators: true });
+//     res.json(settings);
+//   } catch (error) {
+//     console.error('Error in updateAppSettings:', error);
+//     res.status(500).json({ message: 'Error updating app settings' });
+//   }
+// };
 
 exports.getAdminProfile = async (req, res) => {
   try {

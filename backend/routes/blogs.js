@@ -18,7 +18,7 @@ router.get('/:id', getBlog);
 
 // Protected routes
 router.use(protect);
-router.get('/user/blogs', getUserBlogs); // Keep this endpoint consistent
+router.get('/user/blogs', getUserBlogs);
 router.post('/', upload.single('picture'), createBlog);
 router.put('/:id', upload.single('picture'), updateBlog);
 router.delete('/:id', deleteBlog);

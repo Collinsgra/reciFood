@@ -1,6 +1,6 @@
 const Recipe = require('../models/Recipe');
 const path = require('path');
-const User = require('../models/User'); // Import the User model
+const User = require('../models/User');
 
 exports.getAllRecipes = async (req, res) => {
   try {
@@ -73,7 +73,7 @@ exports.updateRecipe = async (req, res) => {
       recipe.servings = servings || recipe.servings;
       recipe.calories = calories || recipe.calories;
       recipe.category = category || recipe.category;
-      recipe.creatorName = req.user.name; // Add this line to set the creatorName
+      recipe.creatorName = req.user.name;
       if (req.file) {
         recipe.picture = path.join('/uploads', req.file.filename);
       }

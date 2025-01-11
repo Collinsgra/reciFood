@@ -55,7 +55,6 @@ const Header = ({ isLoggedIn, isAdmin, onLogout, user, toggleSidebar }) => {
             <Link to="/blogs">Blogs</Link>
             <Link to="/about">About</Link>
             <Link to="/contact">Contact</Link>
-            {isLoggedIn && !isAdmin && <Link to="/my-recipes">My Recipes</Link>}
             {isAdmin && <Link to="/admin">Admin Dashboard</Link>}
           </nav>
         )}

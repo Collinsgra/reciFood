@@ -19,7 +19,7 @@ exports.submitContactForm = async (req, res) => {
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: 'admin@recipeapp.com',
+      to: 'admin@koch.com',
       subject: 'New Contact Form Submission',
       text: `
         Name: ${name}

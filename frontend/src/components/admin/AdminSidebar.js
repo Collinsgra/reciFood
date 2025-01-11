@@ -9,10 +9,6 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
     { icon: Users, label: "User Management", path: "/admin/users" },
     { icon: Utensils, label: "Recipe Management", path: "/admin/recipes" },
     { icon: FileText, label: "Content Management", path: "/admin/content" },
-    { icon: BarChart2, label: "Analytics", path: "/admin/analytics" },
-    { icon: MessageSquare, label: "Comments", path: "/admin/comments" },
-    { icon: Bell, label: "Notifications", path: "/admin/notifications" },
-    { icon: Settings, label: "App Settings", path: "/admin/settings" },
     { icon: User, label: "Admin Profile", path: "/admin/profile" },
   ];
 

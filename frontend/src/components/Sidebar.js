@@ -1,14 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { X, Home, User, FileText, ShoppingBag, Grid, LogOut } from 'lucide-react';
+import { X, Home, User, FileText, Utensils, ShoppingBag, Grid, LogOut } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 const Sidebar = ({ isOpen, toggleSidebar, user, onLogout }) => {
   const menuItems = [
     { icon: Home, label: "Home", path: "/" },
     { icon: FileText, label: "My Articles", path: "/my-articles" },
-    { icon: ShoppingBag, label: "Shopping List", path: "/shopping-list" },
-    { icon: Grid, label: "Categories", path: "/categories" },
+    { icon: Utensils, label: "My Recipes", path: "/my-recipes" },
   ];
 
   const handleLinkClick = () => {

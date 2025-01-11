@@ -16,7 +16,7 @@ const BlogPostForm = ({ onSubmit, onCancel, initialData = null }) => {
         title: initialData.title,
         content: initialData.content,
         tags: initialData.tags ? initialData.tags.join(', ') : '',
-        picture: null, // Reset picture on edit
+        picture: null,
       });
     }
   }, [initialData]);

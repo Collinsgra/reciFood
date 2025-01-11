@@ -61,7 +61,7 @@ exports.login = async (req, res) => {
         email: user.email,
         isAdmin: user.isAdmin,
         token: token,
-        expiresIn: '1h' // Add this line
+        expiresIn: '1h'
       });
     } else {
       console.log('Invalid password for user:', email);
