@@ -6,7 +6,7 @@ A full-stack web application for sharing and discovering recipes. Users can crea
 
 ### User Features
 - 🔐 User authentication (register, login, profile management)
-- 📝 Create, edit, and delete recipes
+- 📝 Create, edit, and delete recipes & Blogs
 - 🖼️ Upload recipe images
 - 🔍 Search and filter recipes by category
 - 👤 View user profiles and their recipes
@@ -15,10 +15,6 @@ A full-stack web application for sharing and discovering recipes. Users can crea
 ### Admin Features
 - 👥 User management (roles, suspension, deletion)
 - 📊 Recipe moderation and management
-- 📈 Analytics and reporting
-- 💬 Comment moderation
-- ⚙️ Application settings management
-- 📨 Notification system
 
 ## Tech Stack
 
