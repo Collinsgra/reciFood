@@ -1,5 +1,8 @@
 # ReciFood - Recipe App
 
+Deployed On Vercel 
+https://reci-food-client.vercel.app
+
 A full-stack web application for sharing and discovering recipes. Users can create, share, and explore recipes while administrators can manage content through a comprehensive admin dashboard.
 
 ## Features
